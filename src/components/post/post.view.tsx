@@ -6,7 +6,9 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { scale } from '~utils/Scale';
 import { AppTheme } from '~configs/AppTheme';
-const PostView = (item: any) => {
+import { IPost } from '~models/post.model';
+import Carousel from 'react-native-reanimated-carousel';
+const PostView = (item: IPost) => {
   return (
     <View style={styles.container}>
       <View style={styles.postHeaderWrapper}>
@@ -35,11 +37,28 @@ const PostView = (item: any) => {
           </Text>
         </View>
         <View style={styles.postMediaWrapper}>
-          <FastImage
-            source={{ uri: item?.medias[0]?.url }}
-            style={styles.postMedia}
-            resizeMode={FastImage.resizeMode.cover}
-          />
+          {item?.medias &&
+            item?.medias?.length > 0 &&
+            (item?.medias?.length === 1 ? (
+              <FastImage
+                source={{ uri: item?.medias[0]?.url }}
+                style={styles.postMedia}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+            ) : (
+              <Carousel
+                data={item?.medias}
+                width={AppTheme.Dimensions.windowWidth - scale(70)}
+                height={scale(200)}
+                renderItem={({ item }) => (
+                  <FastImage
+                    source={{ uri: item?.url }}
+                    style={styles.postMedia}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                )}
+              />
+            ))}
         </View>
         <View style={styles.statisticCountWrapper}>
           <View style={styles.reactionCount}>
@@ -48,7 +67,7 @@ const PostView = (item: any) => {
               size={scale(20)}
               color={AppTheme.Colors.TextBlack}
             />
-            <Text style={styles.textReactionCount}>50</Text>
+            <Text style={styles.textReactionCount}>{item?.likeCount}</Text>
           </View>
           <View style={styles.commentAndShare}>
             <Text style={styles.textCmtShare}>10 comments</Text>
